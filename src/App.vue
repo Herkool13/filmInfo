@@ -16,7 +16,7 @@ export default {
 }
 </script>
 
-<style>
+<style> 
 button{
   font-size: 2rem;
   padding: 1rem 3rem;

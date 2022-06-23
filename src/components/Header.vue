@@ -8,7 +8,7 @@ export default {};
 
 <style scoped>
 header {
-  position: absolute;
+  /* position: absolute; */
   width: 1440px;
   height: 48px;
   left: 0px;
