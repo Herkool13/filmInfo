@@ -1,55 +1,64 @@
 <template>
-  <div class="box-title">
-    <router-link :to="{ name: 'home' }" class="back"> back</router-link>
-    <div class="film-title">
-      <h2>{{ film.title }}</h2>
-      <h4>{{ film.tagline }}</h4>
-    </div>
-  </div>
-  <div class="info-bax">
-    <img :src="filmPoster" alt="" class="film-banner" />
-    <div class="info-film">
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Budget</span>
-        <span class="value-info">${{ film.budget }}</span>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Revenue</span>
-        <span class="value-info">${{ film.revenue }}</span>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Release Date</span>
-        <span class="value-info">{{ film.release_date }}</span>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Runtime</span>
-        <span class="value-info"
-          >{{ Math.floor(film.runtime / 60) }}h {{ film.runtime % 60 }}m</span
-        >
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Score</span>
-        <span class="value-info">${{ film.budget }}</span>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Genres</span>
-        <span class="value-info">{{ ganreString }}</span>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">IMDB Link</span>
-        <a class="value-link" :href="imdbLink">{{
-          film.imdb_id != null ? "link" : "No site"
-        }}</a>
-      </div>
-      <div class="flex flex-row justify-between content-center key-val-box">
-        <span class="key-info">Homepage Link</span>
-        <a class="value-link" :href="film.homepage">{{
-          film.homepage != "" ? "link" : "No site"
-        }}</a>
+    <div class="box-title">
+      <router-link :to="{ name: 'home' }" class="back"> back</router-link>
+      <div class="film-title">
+        <h2>{{ film.title }}</h2>
+        <h4>{{ film.tagline }}</h4>
       </div>
     </div>
+  <div v-if="loading">
+    <div class="loader"></div>
   </div>
-  <p class="overview">{{ film.overview }}</p>
+  <div v-else>
+    <div class="info-bax">
+      <img :src="filmPoster" alt="" class="film-banner" />
+      <div class="info-film">
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Budget</span>
+          <span class="value-info">${{ film.budget }}</span>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Revenue</span>
+          <span class="value-info">${{ film.revenue }}</span>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Release Date</span>
+          <span class="value-info">{{ film.release_date }}</span>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Runtime</span>
+          <span class="value-info"
+            >{{ Math.floor(film.runtime / 60) }}h {{ film.runtime % 60 }}m</span
+          >
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Score</span>
+          <span class="value-info">{{ `(${film.popularity} vote)` }}</span>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Genres</span>
+          <span class="value-info">{{ ganreString }}</span>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">IMDB Link</span>
+          <a class="value-link" :href="imdbLink">{{
+            film.imdb_id != null ? "link" : "No site"
+          }}</a>
+        </div>
+        <div class="flex flex-row justify-between content-center key-val-box">
+          <span class="key-info">Homepage Link</span>
+          <a class="value-link" :href="film.homepage">{{
+            film.homepage != "" ? "link" : "No site"
+          }}</a>
+        </div>
+      </div>
+    </div>
+    <p class="overview">{{ film.overview }}</p>
+    <div class="credit-box">
+      <h4>Credit:</h4>
+      <p>{{ creditText }}</p>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -65,6 +74,7 @@ export default {
     const filmPoster = ref("");
     const ganreString = ref("");
     const imdbLink = ref("");
+    const creditText = ref("");
     let ganreList = [];
     function getFilms() {
       axios
@@ -77,6 +87,7 @@ export default {
           response.data.genres.forEach((g) => ganreList.push(g.name));
           ganreString.value = ganreList.join(", ");
           imdbLink.value = `https://www.imdb.com/title/${response.data.imdb_id}/`;
+          credit(response.data.id);
           loading.value = false;
         })
         .catch(function (error) {
@@ -84,8 +95,27 @@ export default {
           console.log(error);
         });
     }
+    function credit(id) {
+      axios
+        .get(
+          `https://api.themoviedb.org/3/movie/${id}/credits?api_key=f62f750b70a8ef11dad44670cfb6aa57&language=en-US`
+        )
+        .then(function (response) {
+          let cast = response.data.cast
+            .sort((a, b) => (a.popularity > b.popularity ? 1 : -1))
+            .reverse();
+          let topCast = [];
+          for (let i = 0; i < 10; i++) {
+            topCast.push(cast[i].name);
+          }
+          creditText.value = `${topCast.join(" ,")} and ${cast.length} more`;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
     getFilms();
-    return { film, loading, filmPoster, ganreString, imdbLink };
+    return { film, loading, filmPoster, ganreString, imdbLink, creditText };
   },
 };
 </script>
@@ -203,6 +233,29 @@ export default {
   color: #1e1e1e;
   margin: auto;
   margin-top: 53px;
+  margin-bottom: 80px;
+}
+.credit-box {
+  width: 1017px;
+  height: 101px;
+  margin: auto;
   margin-bottom: 100px;
+}
+.credit-box h4 {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 22px;
+  margin-bottom: 12px;
+  color: #000000;
+}
+.credit-box p {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #1e1e1e;
 }
 </style>

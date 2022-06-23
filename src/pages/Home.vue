@@ -2,9 +2,11 @@
   <div class="container">
     <SearchBox @filterDate="filterDate" />
     <div class="showResult flex flex-row film-card justify-between flex-wrap">
-      <div v-if="loading">loading</div>
+      <div v-if="loading" class="loader-box">
+        <div class="loader"></div>
+      </div>
       <div v-else v-for="(film, index) in films" :key="index">
-        <EachFilmCard :film="film"  :genres="genres"/>
+        <EachFilmCard :film="film" :genres="genres" />
       </div>
     </div>
     <div class="switchPages">
@@ -98,7 +100,7 @@ export default {
     }
     getGenre();
     // getFilms(page);
-    return { films, loading, page, filterDate ,genres};
+    return { films, loading, page, filterDate, genres };
   },
 };
 </script>
@@ -140,5 +142,11 @@ export default {
   font-size: 16px;
   line-height: 19px;
   color: #989898;
+}
+.loader-box{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
