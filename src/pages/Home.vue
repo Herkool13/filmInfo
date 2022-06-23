@@ -1,7 +1,9 @@
 <template>
   <div class="container">
-    <SearchBox />
-    <button @click="page > 1 ? page-- : (page = 1)" class="btn">prev</button>
+    <SearchBox @filterDate="filterDate" />
+    <button @click="page > 1 ? page-- : (page = 1)" class="bg-blue-500">
+      prev
+    </button>
     <button @click="page < 500 ? page++ : (page = 500)" class="btn">
       next
     </button>
@@ -27,10 +29,11 @@ export default {
     const films = ref([]);
     const page = ref(1);
     const loading = ref(true);
+    const dateQuery = ref("");
     function getFilms(page) {
       axios
         .get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=f62f750b70a8ef11dad44670cfb6aa57&page=${page}`
+          `https://api.themoviedb.org/3/discover/movie?api_key=f62f750b70a8ef11dad44670cfb6aa57&page=${page}${dateQuery.value}`
         )
         .then(function (response) {
           loading.value = true;
@@ -42,12 +45,26 @@ export default {
           console.log(error);
         });
     }
-    onMounted(()=>getFilms(page.value))
-    watch(page, () => {
+    function filterDate(date) {
+      if (date.value.length != 0) {
+        dateQuery.value = `&release_date.gte=${date.value[0]
+          .split(" ")
+          .reverse()
+          .join("-")}&release_date.lte=${date.value[1]
+          .split(" ")
+          .reverse()
+          .join("-")}`;
+        console.log(dateQuery.value);
+      } else {
+        console.log("no date");
+      }
+    }
+    onMounted(() => getFilms(page.value));
+    watch([page,dateQuery], () => {
       getFilms(page.value);
     });
     // getFilms(page);
-    return { films, loading, page };
+    return { films, loading, page, filterDate };
   },
 };
 </script>
@@ -67,9 +84,5 @@ export default {
 }
 .btn {
   color: #333;
-  /* position:absolute;
-  bottom: 0; */
-  /* display: grid; */
-  /* display: block; */
 }
 </style>

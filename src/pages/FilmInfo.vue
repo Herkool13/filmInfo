@@ -14,7 +14,6 @@ setup() {
     const film = ref({});
     const loading=ref(true);
     const route=useRoute();
-    console.log();
     function getFilms() {
       axios
         .get(
@@ -23,7 +22,6 @@ setup() {
         .then(function (response) {
           film.value = response.data;
             loading.value=false;
-            console.log(response.data);
         })
         .catch(function (error) {
           // handle error

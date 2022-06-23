@@ -18,8 +18,6 @@ export default {
     watch(props, () => {
       filmPoster.value = `https://image.tmdb.org/t/p/w500${props.film.poster_path}`;
     });
-    // console.log(`https://image.tmdb.org/t/p/w500${props.film.poster_path}`);
-    // console.log(props);
     return { filmPoster };
   },
 };
