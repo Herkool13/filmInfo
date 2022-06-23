@@ -27,7 +27,7 @@
 <script>
 import SearchBox from "../components/SearchBox.vue";
 import axios from "axios";
-import { reactive, ref } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 import EachFilmCard from "../components/EachFilmCard.vue";
 import { onMounted, watch } from "@vue/runtime-core";
 export default {
@@ -143,7 +143,7 @@ export default {
   line-height: 19px;
   color: #989898;
 }
-.loader-box{
+.loader-box {
   width: 100%;
   display: flex;
   justify-content: center;
