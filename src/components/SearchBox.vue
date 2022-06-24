@@ -14,9 +14,8 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import LitepieDatepicker from "litepie-datepicker";
-import { loadConfig } from "browserslist";
 
 export default {
   components: {
@@ -24,10 +23,10 @@ export default {
   },
   setup(props, { emit }) {
     const dateValue = ref([]);
-    dateValue.value = JSON.parse(localStorage.getItem("timeRange"));
-    watch(dateValue, () => {
-      localStorage.setItem("timeRange", JSON.stringify(dateValue.value));
-    });
+    // dateValue.value = JSON.parse(localStorage.getItem("timeRange"));
+    // watch(dateValue, () => {
+    //   localStorage.setItem("timeRange", JSON.stringify(dateValue.value));
+    // });
     const formatter = ref({
       date: "DD MM YYYY",
       month: "MM",

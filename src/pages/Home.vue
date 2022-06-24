@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="switchPages">
-      <button @click="page > 1 ? page-- : (page = 1)" class="bg-blue-500">
+      <button @click="page > 1 ? page-- : (page = 1)" class="btn">
         Previous Page
       </button>
       <div class="space"></div>
